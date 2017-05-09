@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const router = require('express').Router();
 
@@ -12,18 +13,19 @@ router.post('/login', function (req, res, next) {
             return res.json();
         }
 
-        /**
-         * @todo add bcrypt password encoder
-         */
-        if (body.password !== user.password) {
-            res.status(401);
-            return res.json();
-        }
+        bcrypt.compare(body.password, user.password, function (err, isMatch) {
+            if (err) throw err;
 
-        /**
-         * @todo add json web token
-         */
-        res.json({ authorization: 'token' });
+            if (!isMatch) {
+                res.status(401);
+                return res.json();
+            }
+
+            /**
+             * @todo add json web token
+             */
+            res.json({ authorization: 'token' });
+        });
     });
 });
 
