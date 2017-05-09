@@ -1,7 +1,13 @@
 const express = require('express');
 const app = express();
+const mongoose = require('mongoose');
 const public = require('./routes/public');
 const bodyParser = require('body-parser');
+
+mongoose.connect('mongodb://localhost/test');
+mongoose.connection.on('error', function (err) {
+    throw err;
+});
 
 app.use(bodyParser.json());
 
