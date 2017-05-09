@@ -1,3 +1,5 @@
+const fs = require('fs');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const router = require('express').Router();
@@ -21,10 +23,16 @@ router.post('/login', function (req, res, next) {
                 return res.json();
             }
 
-            /**
-             * @todo add json web token
-             */
-            res.json({ authorization: 'token' });
+            const payload = {
+                name: user.name,
+                email: user.email,
+                roles: user.roles
+            };
+
+            // openssl genrsa -out private.pem 2048
+            const cert = fs.readFileSync('./resources/private.pem');
+            const token = jwt.sign(payload, cert, { algorithm: 'RS512' });
+            res.json({ authorization: token });
         });
     });
 });
